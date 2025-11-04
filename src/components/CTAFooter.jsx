@@ -1,59 +1,27 @@
-import { useEffect, useRef, useState } from 'react';
+import React from 'react';
+import { ArrowRight } from 'lucide-react';
 
-const useReveal = () => {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisible(true);
-            io.disconnect();
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  return { ref, visible };
-};
-
-const CTAFooter = () => {
-  const { ref, visible } = useReveal();
+export default function CTAFooter() {
   return (
-    <section className="relative w-full bg-[#050B1E] pb-12 pt-16 text-[#E6F1FF]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(30,144,255,0.08),transparent_60%)]" />
-      <div
-        ref={ref}
-        className={`relative mx-auto max-w-6xl px-6 text-center transition-all duration-700 ${
-          visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
-        }`}
-      >
-        <h3 className="mb-3 text-2xl font-bold sm:text-3xl">Ready to defend the digital frontier?</h3>
-        <div className="mb-2 flex justify-center">
-          <a
-            href="#"
-            className="group inline-flex items-center justify-center rounded-md border border-cyan-300/30 bg-cyan-400/10 px-8 py-3 text-sm font-semibold text-[#E6F1FF] shadow-[0_0_24px_rgba(0,255,240,0.15)] transition duration-200 hover:-translate-y-0.5 hover:border-cyan-300/60 hover:shadow-[0_0_40px_rgba(0,255,240,0.35)] focus:outline-none focus:ring-2 focus:ring-[#00FFF0]/60"
-          >
-            <span className="relative">
-              Join the Beta
-              <span className="absolute inset-0 -z-10 animate-pulse rounded blur-md opacity-60 bg-[#00FFF0]/20" />
-            </span>
-          </a>
+    <footer id="get-started" className="relative py-16">
+      <div className="container mx-auto px-6">
+        <div className="relative overflow-hidden rounded-xl border border-white/10 bg-white/5">
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-cyan-400/10 via-transparent to-blue-400/10" />
+          <div className="relative p-8 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div>
+              <h3 className="text-xl md:text-2xl font-semibold">Ready to pressure‑test your defenses?</h3>
+              <p className="mt-2 text-white/75">Spin up a realistic attack path and watch your signals light up.</p>
+            </div>
+            <a
+              href="#"
+              className="inline-flex items-center gap-2 rounded-md bg-cyan-400/90 hover:bg-cyan-300 text-black px-5 py-3 font-medium shadow-[0_0_30px_rgba(0,255,240,0.35)] hover:shadow-[0_0_40px_rgba(0,255,240,0.5)] transition"
+            >
+              Get started
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
         </div>
-        <p className="text-sm text-[#E6F1FF]/70">Powered by AI · Built for Cyber Warriors</p>
       </div>
-
-      <footer className="relative mx-auto mt-14 max-w-6xl px-6 text-center text-xs text-[#E6F1FF]/60">
-        © 2025 ThreatSim · Ethical Tech for Global Good.
-      </footer>
-    </section>
+    </footer>
   );
-};
-
-export default CTAFooter;
+}

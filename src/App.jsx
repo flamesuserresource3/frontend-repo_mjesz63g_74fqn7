@@ -1,11 +1,12 @@
-import Hero from './components/Hero';
-import AboutFeatures from './components/AboutFeatures';
-import Preview from './components/Preview';
-import CTAFooter from './components/CTAFooter';
+import React from 'react';
+import Hero from './components/Hero.jsx';
+import AboutFeatures from './components/AboutFeatures.jsx';
+import Preview from './components/Preview.jsx';
+import CTAFooter from './components/CTAFooter.jsx';
 
-function App() {
+export default function App() {
   return (
-    <div className="min-h-screen w-full scroll-smooth bg-[#050B1E] font-sans text-[#E6F1FF]">
+    <div className="min-h-screen bg-[#050B1E] text-[#E6F1FF] antialiased">
       <Hero />
       <AboutFeatures />
       <Preview />
@@ -13,5 +14,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
