@@ -43,7 +43,7 @@ function CursorTrail() {
           vy: (Math.random() - 0.5) * 0.5,
           life: 0.9,
           size: 0.8 + Math.random() * 1.2,
-          hue: 185 + Math.random() * 40, // cyan/blue
+          hue: 200 + Math.random() * 20, // sky/cyan range
         });
       }
     };
@@ -69,11 +69,10 @@ function CursorTrail() {
 
     const loop = () => {
       rafRef.current = requestAnimationFrame(loop);
-      // fade with slightly stronger alpha for quicker decay (more translucent overall)
+      // translucent fade
       ctx.fillStyle = 'rgba(5, 11, 30, 0.25)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // update & draw
       for (let i = particles.current.length - 1; i >= 0; i--) {
         const p = particles.current[i];
         p.x += p.vx;
@@ -85,7 +84,7 @@ function CursorTrail() {
           particles.current.splice(i, 1);
           continue;
         }
-        const alpha = Math.max(0, Math.min(0.55, p.life));
+        const alpha = Math.max(0, Math.min(0.5, p.life));
         const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 5);
         grad.addColorStop(0, `hsla(${p.hue}, 100%, 70%, ${alpha})`);
         grad.addColorStop(1, 'hsla(200, 100%, 50%, 0)');
@@ -124,10 +123,10 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-[90vh] lg:min-h-screen overflow-hidden">
-      {/* Spline 3D background cover */}
+      {/* Spline 3D background cover (new sky blue asset) */}
       <div className="absolute inset-0">
         <Spline
-          scene="https://prod.spline.design/hinHjJppKaZFIbCr/scene.splinecode"
+          scene="https://prod.spline.design/pVLJXSVq3zyQq0OD/scene.splinecode"
           style={{ width: '100%', height: '100%' }}
         />
       </div>
@@ -137,15 +136,15 @@ export default function Hero() {
 
       {/* Soft gradient vignettes that don't block interaction */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-32 -left-32 h-80 w-80 bg-cyan-500/6 blur-3xl rounded-full" />
-        <div className="absolute bottom-0 right-0 h-96 w-96 bg-blue-500/6 blur-3xl rounded-full" />
+        <div className="absolute -top-32 -left-32 h-80 w-80 bg-sky-400/10 blur-3xl rounded-full" />
+        <div className="absolute bottom-0 right-0 h-96 w-96 bg-blue-500/10 blur-3xl rounded-full" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
       </div>
 
       {/* Cursor particle trail overlay (already pointer-events-none) */}
       <CursorTrail />
 
-      {/* Foreground content */}
+      {/* Foreground content with blue backdrop behind text */}
       <div
         ref={contentRef}
         onMouseMove={onMouseMove}
@@ -153,43 +152,50 @@ export default function Hero() {
       >
         <div
           style={{ transform: `translate3d(${parallax.x}px, ${parallax.y}px, 0)` }}
-          className="transition-transform duration-150 will-change-transform"
+          className="relative transition-transform duration-150 will-change-transform"
         >
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/6 backdrop-blur px-3 py-1 text-xs md:text-sm border border-white/10">
-            <Shield className="h-3.5 w-3.5 text-cyan-300" />
-            <span className="text-cyan-200/90">ThreatSim</span>
-            <span className="text-white/70">Adaptive Attack Simulation</span>
+          {/* Blue glow panel behind the text */}
+          <div className="pointer-events-none absolute -inset-x-6 -inset-y-6 md:-inset-x-10 md:-inset-y-10 z-0">
+            <div className="mx-auto max-w-3xl h-full rounded-[28px] bg-gradient-to-b from-sky-500/30 via-sky-500/20 to-transparent blur-2xl" />
           </div>
 
-          <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">
-            Red-team realism. Blue-team resilience.
-          </h1>
-          <p className="mt-4 max-w-2xl text-white/85">
-            Train detection pipelines against living, breathing simulations. Orchestrate adversary behavior, stress-test controls, and level up your response.
-          </p>
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/6 backdrop-blur px-3 py-1 text-xs md:text-sm border border-white/10">
+              <Shield className="h-3.5 w-3.5 text-cyan-300" />
+              <span className="text-cyan-200/90">ThreatSim</span>
+              <span className="text-white/70">Adaptive Attack Simulation</span>
+            </div>
 
-          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <a
-              href="#get-started"
-              className="inline-flex items-center justify-center gap-2 rounded-md bg-cyan-400/90 hover:bg-cyan-300 text-black px-5 py-3 font-medium shadow-[0_0_30px_rgba(0,255,240,0.35)] hover:shadow-[0_0_40px_rgba(0,255,240,0.5)] transition"
-            >
-              <Rocket className="h-4 w-4" />
-              Launch a Simulation
-            </a>
-            <a
-              href="#preview"
-              className="inline-flex items-center justify-center gap-2 rounded-md border border-white/15 bg-white/5 hover:bg-white/10 px-5 py-3 font-medium text-white/90 transition"
-            >
-              <MousePointerClick className="h-4 w-4" />
-              See It in Action
-            </a>
-          </div>
+            <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">
+              Red-team realism. Blue-team resilience.
+            </h1>
+            <p className="mt-4 max-w-2xl text-white/85">
+              Train detection pipelines against living, breathing simulations. Orchestrate adversary behavior, stress-test controls, and level up your response.
+            </p>
 
-          <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-white/75">
-            <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2">Atomic TTPs</div>
-            <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2">MITRE ATT&CK Mapping</div>
-            <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2">Live Telemetry</div>
-            <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2">Team Workflows</div>
+            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <a
+                href="#get-started"
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-cyan-400/90 hover:bg-cyan-300 text-black px-5 py-3 font-medium shadow-[0_0_30px_rgba(0,255,240,0.35)] hover:shadow-[0_0_40px_rgba(0,255,240,0.5)] transition"
+              >
+                <Rocket className="h-4 w-4" />
+                Launch a Simulation
+              </a>
+              <a
+                href="#preview"
+                className="inline-flex items-center justify-center gap-2 rounded-md border border-white/15 bg-white/5 hover:bg-white/10 px-5 py-3 font-medium text-white/90 transition"
+              >
+                <MousePointerClick className="h-4 w-4" />
+                See It in Action
+              </a>
+            </div>
+
+            <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-white/75">
+              <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2">Atomic TTPs</div>
+              <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2">MITRE ATT&CK Mapping</div>
+              <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2">Live Telemetry</div>
+              <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2">Team Workflows</div>
+            </div>
           </div>
         </div>
       </div>
