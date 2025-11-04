@@ -34,25 +34,29 @@ function CursorTrail() {
       mouse.current.x = (e.clientX - rect.left) * window.devicePixelRatio;
       mouse.current.y = (e.clientY - rect.top) * window.devicePixelRatio;
       mouse.current.moved = true;
-      // spawn a few particles
-      for (let i = 0; i < 3; i++) {
+      // spawn a few subtle particles
+      for (let i = 0; i < 2; i++) {
         particles.current.push({
-          x: mouse.current.x + (Math.random() - 0.5) * 10,
-          y: mouse.current.y + (Math.random() - 0.5) * 10,
-          vx: (Math.random() - 0.5) * 0.6,
-          vy: (Math.random() - 0.5) * 0.6,
-          life: 1,
-          size: 1 + Math.random() * 1.5,
+          x: mouse.current.x + (Math.random() - 0.5) * 8,
+          y: mouse.current.y + (Math.random() - 0.5) * 8,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          life: 0.9,
+          size: 0.8 + Math.random() * 1.2,
           hue: 185 + Math.random() * 40, // cyan/blue
         });
       }
     };
     container.addEventListener('mousemove', onMove);
-    container.addEventListener('touchmove', (e) => {
-      if (!e.touches[0]) return;
-      const t = e.touches[0];
-      onMove({ clientX: t.clientX, clientY: t.clientY });
-    }, { passive: true });
+    container.addEventListener(
+      'touchmove',
+      (e) => {
+        if (!e.touches[0]) return;
+        const t = e.touches[0];
+        onMove({ clientX: t.clientX, clientY: t.clientY });
+      },
+      { passive: true }
+    );
     return () => {
       container.removeEventListener('mousemove', onMove);
     };
@@ -65,8 +69,8 @@ function CursorTrail() {
 
     const loop = () => {
       rafRef.current = requestAnimationFrame(loop);
-      // fade
-      ctx.fillStyle = 'rgba(5, 11, 30, 0.18)';
+      // fade with slightly stronger alpha for quicker decay (more translucent overall)
+      ctx.fillStyle = 'rgba(5, 11, 30, 0.25)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // update & draw
@@ -74,20 +78,20 @@ function CursorTrail() {
         const p = particles.current[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.vx *= 0.99;
-        p.vy *= 0.99;
-        p.life -= 0.02;
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+        p.life -= 0.03;
         if (p.life <= 0) {
           particles.current.splice(i, 1);
           continue;
         }
-        const alpha = Math.max(0, Math.min(1, p.life));
-        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 6);
+        const alpha = Math.max(0, Math.min(0.55, p.life));
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 5);
         grad.addColorStop(0, `hsla(${p.hue}, 100%, 70%, ${alpha})`);
         grad.addColorStop(1, 'hsla(200, 100%, 50%, 0)');
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
         ctx.fill();
       }
     };
@@ -128,14 +132,17 @@ export default function Hero() {
         />
       </div>
 
+      {/* Dim, translucent scrim to keep background from overpowering text */}
+      <div className="absolute inset-0 bg-[#050B1E]/55" />
+
       {/* Soft gradient vignettes that don't block interaction */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-32 -left-32 h-80 w-80 bg-cyan-500/10 blur-3xl rounded-full" />
-        <div className="absolute bottom-0 right-0 h-96 w-96 bg-blue-500/10 blur-3xl rounded-full" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+        <div className="absolute -top-32 -left-32 h-80 w-80 bg-cyan-500/6 blur-3xl rounded-full" />
+        <div className="absolute bottom-0 right-0 h-96 w-96 bg-blue-500/6 blur-3xl rounded-full" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
       </div>
 
-      {/* Cursor particle trail overlay */}
+      {/* Cursor particle trail overlay (already pointer-events-none) */}
       <CursorTrail />
 
       {/* Foreground content */}
@@ -148,16 +155,16 @@ export default function Hero() {
           style={{ transform: `translate3d(${parallax.x}px, ${parallax.y}px, 0)` }}
           className="transition-transform duration-150 will-change-transform"
         >
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/5 backdrop-blur px-3 py-1 text-xs md:text-sm border border-white/10">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/6 backdrop-blur px-3 py-1 text-xs md:text-sm border border-white/10">
             <Shield className="h-3.5 w-3.5 text-cyan-300" />
             <span className="text-cyan-200/90">ThreatSim</span>
-            <span className="text-white/60">Adaptive Attack Simulation</span>
+            <span className="text-white/70">Adaptive Attack Simulation</span>
           </div>
 
           <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">
             Red-team realism. Blue-team resilience.
           </h1>
-          <p className="mt-4 max-w-2xl text-white/80">
+          <p className="mt-4 max-w-2xl text-white/85">
             Train detection pipelines against living, breathing simulations. Orchestrate adversary behavior, stress-test controls, and level up your response.
           </p>
 
@@ -178,7 +185,7 @@ export default function Hero() {
             </a>
           </div>
 
-          <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-white/70">
+          <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-white/75">
             <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2">Atomic TTPs</div>
             <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2">MITRE ATT&CK Mapping</div>
             <div className="rounded-md border border-white/10 bg-white/5 px-3 py-2">Live Telemetry</div>
